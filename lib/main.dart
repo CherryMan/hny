@@ -1,52 +1,13 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
 
-const HN_API_URL     = 'https://hacker-news.firebaseio.com';
-const HN_API_VERSION = 'v0';
-
-// to access HN API
-DatabaseReference db;
-
-// Cache story IDs
-List<dynamic> storyIDs;
+import 'hn/hn.dart';
+import 'hn/data.dart';
 
 void main() async {
-
-  // Initialize the app
-  final FirebaseApp app = await FirebaseApp.configure(
-    name: 'hny',
-    options: const FirebaseOptions(
-      // Although the HN API is public, the firebase library for
-      // flutter requires the three following variables to be set
-      // to non-empty values, even if the values are meaningless.
-      googleAppID: '_', // required due to an assertion in firebase
-      apiKey:      '_', // required on Android
-      gcmSenderID: '_', // required on iOS
-    ),
-  );
-
-  // Initialize the database for accessing the HN API.
-  db = FirebaseDatabase(
-    app: app,
-    databaseURL: HN_API_URL,
-  ).reference().child(HN_API_VERSION);
-
+  await initFirebase();
   runApp(App());
-}
-
-Future<dynamic> queryHN(String q) async =>
-  db.child(q).once().then((DataSnapshot s) => s.value);
-
-Future<String> getTitle(int index) async {
-  // Memoize the request
-  if (storyIDs == null)
-    await queryHN('topstories').then((s) => storyIDs = s);
-
-  return queryHN('item/${storyIDs[index]}/title')
-    .then((s) => s);
 }
 
 class App extends StatelessWidget {
@@ -67,13 +28,23 @@ class HomeView extends StatelessWidget {
     appBar: AppBar(
       title: Text('Stories'),
     ),
-    body: Container(
-      child: StoryList(),
+    body: FutureBuilder<List<int>>(
+      future: getStories(StorySrc.Top),
+      builder: (_, snap) =>
+        snap.hasData
+          ? Container(child: StoryList(snap.data))
+        : snap.hasError
+          ? Center(child: Text('ERROR: ${snap.error}'))
+        : Center(child: CircularProgressIndicator())
+      ,
     ),
   );
 }
 
 class StoryList extends StatelessWidget {
+  StoryList(this._storyIDs);
+
+  final List<int> _storyIDs;
 
   // Placeholder widget before story info has been loaded
   static final _placeholder = Container(
@@ -83,16 +54,34 @@ class StoryList extends StatelessWidget {
 
   @override
   Widget build(BuildContext _) => ListView.builder(
-    itemBuilder: (ctx, i) => ListTile(
-      title: FutureBuilder<String>(
-        future: getTitle(i),
-        builder: (ctx, snap) =>
-          snap.hasData
-            ? Text('${snap.data}')
-          : snap.hasError
-            ? Text('${snap.error}')
-          : _placeholder,
+    itemCount: _storyIDs.length,
+    itemBuilder: (_, i) => FutureBuilder<Story>(
+      future: Story.fromID(_storyIDs[i]),
+      builder: (_, snap) =>
+        snap.hasData
+        ? StoryListTile(snap.data, i)
+        : snap.hasError
+        ? Text('ERROR: ${snap.error}')
+        : _placeholder,
+    ),
+  );
+}
+
+class StoryListTile extends StatelessWidget {
+  StoryListTile(this._story, this._number);
+
+  final int _number;
+  final Story _story;
+
+  @override
+  Widget build(BuildContext _) => ListTile(
+    leading: Text(
+      '${_number}',
+      style: TextStyle(
+        fontSize: 25.0,
       ),
     ),
+    title: Text(_story.title),
+    subtitle: Text(_story.by),
   );
 }
