@@ -46,42 +46,103 @@ class StoryList extends StatelessWidget {
 
   final List<int> _storyIDs;
 
-  // Placeholder widget before story info has been loaded
-  static final _placeholder = Container(
-    alignment: Alignment.centerLeft,
-    child: Text('...'),
-  );
-
   @override
   Widget build(BuildContext _) => ListView.builder(
     itemCount: _storyIDs.length,
-    itemBuilder: (_, i) => FutureBuilder<Story>(
-      future: Story.fromID(_storyIDs[i]),
-      builder: (_, snap) =>
-        snap.hasData
-        ? StoryListTile(snap.data, i)
-        : snap.hasError
-        ? Text('ERROR: ${snap.error}')
-        : _placeholder,
-    ),
+    itemBuilder: (_, i) {
+      return FutureBuilder<Story>(
+        future: Story.fromID(_storyIDs[i]),
+        builder: (_, snap) =>
+          snap.hasData
+          ? StoryListTile(snap.data)
+          : snap.hasError
+          ? Text('ERROR: ${snap.error}')
+          : StoryListTile(null),
+      );
+    },
   );
 }
 
 class StoryListTile extends StatelessWidget {
-  StoryListTile(this._story, this._number);
+  StoryListTile(this._story);
 
-  final int _number;
   final Story _story;
 
-  @override
-  Widget build(BuildContext _) => ListTile(
-    leading: Text(
-      '${_number}',
+  final _titleStyle = const
+    TextStyle(
+      fontSize: 18.0,
+      fontWeight: FontWeight.normal,
+    );
+
+  final _byStyle = const
+    TextStyle(
+      fontSize: 10.0,
+      fontWeight: FontWeight.w300,
+    );
+
+  Widget _titleWidget() => Container(
+    alignment: Alignment.centerLeft,
+    child: Text(
+      _story?.title ?? '...',
       style: TextStyle(
-        fontSize: 25.0,
+        fontSize: 18.0,
+        fontWeight: FontWeight.normal,
       ),
     ),
-    title: Text(_story.title),
-    subtitle: Text(_story.by),
   );
+
+  // Generate what the card will contain
+  Widget _cardContents() {
+
+    var infoRow =
+      Row(
+        children: <Widget>[
+          Text(_story?.by ?? '...', style: _byStyle),
+        ],
+      );
+
+    // Contains post title and info
+    var mainColumn = 
+      Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+
+        children: <Widget>[
+          Container(
+            padding: const EdgeInsets.only(bottom: 3.0),
+            child: Text(_story?.title ?? '...', style: _titleStyle),
+          ),
+          infoRow,
+        ],
+      );
+
+    // Contains the column with title and info
+    var mainRow = 
+      Row(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.start,
+
+        children: <Widget>[
+          Flexible(
+            child: mainColumn,
+          ),
+        ],
+      );
+
+    return mainRow;
+  }
+
+  @override
+  Widget build(BuildContext _) =>
+    Card(
+      margin: const EdgeInsets.all(2.5),
+
+      child: InkWell(
+        onTap: () {},
+
+        child: Container(
+          padding: const EdgeInsets.all(10.0),
+          child: _cardContents(),
+        ),
+      ),
+    );
 }
