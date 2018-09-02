@@ -29,11 +29,11 @@ class Story extends Item {
 
   factory Story.fromJson(Map<String, dynamic> json) => _$StoryFromJson(json);
 
+  /// Does not validate whether the ID points to a Story.
   static Future<Story> fromID(int n) async
     => getItem(n)
         .then((x) =>
-          Story.fromJson(x)
-  );
+          Story.fromJson(x));
 
   final String title;
   final String url;
@@ -44,7 +44,7 @@ class Story extends Item {
   final int score;
 }
 
-@JsonSerializable(nullable: false)
+@JsonSerializable()
 class Comment extends Item {
   Comment(
     id, time, by,
@@ -54,6 +54,12 @@ class Comment extends Item {
   ) : super(id, time, by);
 
   factory Comment.fromJson(Map<String, dynamic> json) => _$CommentFromJson(json);
+
+  /// Does not validate whether the ID points to a Comment.
+  static Future<Comment> fromID(int n) async
+    => getItem(n)
+        .then((x) =>
+          Comment.fromJson(x));
 
   final String text;
   final int parent;

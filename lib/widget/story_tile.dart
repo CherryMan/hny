@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../hn/data.dart';
+import '../view/story.dart';
 
 class StoryTile extends StatelessWidget {
   StoryTile(this._story);
@@ -61,7 +62,7 @@ class StoryTile extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.start,
 
         children: <Widget>[
-          Flexible(
+          Expanded(
             child: mainColumn,
           ),
         ],
@@ -71,12 +72,19 @@ class StoryTile extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext _) =>
+  Widget build(BuildContext ctx) =>
     Card(
       margin: const EdgeInsets.all(2.5),
 
       child: InkWell(
-        onTap: () {},
+        onTap: () {
+          if (_story != null) {
+            Navigator.push(
+              ctx,
+              MaterialPageRoute(builder: (ctx) => StoryView(_story)),
+            );
+          }
+        },
 
         child: Container(
           padding: const EdgeInsets.all(10.0),
