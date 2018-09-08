@@ -1,7 +1,7 @@
 name: hny
 description: A Hacker News Browser
 
-version: 0.1.0+1
+version: 0.2.0+1
 
 dependencies:
   flutter:
