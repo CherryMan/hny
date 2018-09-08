@@ -36,7 +36,7 @@ Comment _$CommentFromJson(Map<String, dynamic> json) {
       json['id'],
       json['time'],
       json['by'],
-      json['text'] as String,
+      json['text'],
       json['parent'] as int,
       (json['kids'] as List)?.map((e) => e as int)?.toList());
 }

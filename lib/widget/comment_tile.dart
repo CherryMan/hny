@@ -25,8 +25,8 @@ class CommentTile extends StatelessWidget {
 
   Widget _buildTile() {
 
-    String author = '${_comment?.by}'   ?? '...';
-    String text   = '${_comment?.text}' ?? '...';
+    String author = _comment?.by   ?? '...';
+    String text   = _comment?.text ?? '...';
 
     final col =
       Column(

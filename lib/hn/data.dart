@@ -1,6 +1,8 @@
+import 'dart:core';
 import 'dart:async';
 
 import 'package:json_annotation/json_annotation.dart';
+import 'package:html_unescape/html_unescape_small.dart';
 
 import 'hn.dart';
 
@@ -48,10 +50,11 @@ class Story extends Item {
 class Comment extends Item {
   Comment(
     id, time, by,
-    this.text,
+    text,
     this.parent,
     this.kids,
-  ) : super(id, time, by);
+  ) : this.text = HtmlUnescape().convert(text),
+      super(id, time, by);
 
   factory Comment.fromJson(Map<String, dynamic> json) => _$CommentFromJson(json);
 
