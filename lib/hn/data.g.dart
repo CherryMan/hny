@@ -11,6 +11,7 @@ Story _$StoryFromJson(Map<String, dynamic> json) {
       json['id'],
       json['time'],
       json['by'],
+      json['deleted'] ?? false,
       json['title'] as String,
       json['url'] as String,
       json['text'] as String,
@@ -23,6 +24,7 @@ Map<String, dynamic> _$StoryToJson(Story instance) => <String, dynamic>{
       'id': instance.id,
       'time': instance.time?.toIso8601String(),
       'by': instance.by,
+      'deleted': instance.deleted,
       'title': instance.title,
       'url': instance.url,
       'text': instance.text,
@@ -36,6 +38,7 @@ Comment _$CommentFromJson(Map<String, dynamic> json) {
       json['id'],
       json['time'],
       json['by'],
+      json['deleted'] ?? false,
       json['text'],
       json['parent'] as int,
       (json['kids'] as List)?.map((e) => e as int)?.toList());
@@ -45,6 +48,7 @@ Map<String, dynamic> _$CommentToJson(Comment instance) => <String, dynamic>{
       'id': instance.id,
       'time': instance.time?.toIso8601String(),
       'by': instance.by,
+      'deleted': instance.deleted,
       'text': instance.text,
       'parent': instance.parent,
       'kids': instance.kids

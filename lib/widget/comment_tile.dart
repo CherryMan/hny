@@ -25,20 +25,36 @@ class CommentTile extends StatelessWidget {
 
   Widget _buildTile() {
 
-    String author = _comment?.by   ?? '...';
-    String text   = _comment?.text ?? '...';
+    String author, text;
+
+    // Widgets for the column that stores the info and comment text
+    var colItems = <Widget>[];
+
+    if (_comment?.deleted) {
+      text   = '[deleted]';
+    } else {
+      author = _comment?.by   ?? '...';
+      text   = _comment?.text ?? '...';
+    }
+
+    if (author != null) {
+      colItems.add(
+        Container(
+          padding: const EdgeInsets.only(top:2.0, bottom: 6.0),
+          child: Text(author, style: _infoStyle),
+        ),
+      );
+    }
+
+    colItems.add(
+      Text(text, style: _textStyle),
+    );
 
     final col =
       Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            padding: const EdgeInsets.only(top:2.0, bottom: 6.0),
-            child: Text(author,   style: _infoStyle),
-          ),
-          Text(text, style: _textStyle),
-        ],
+        children: colItems,
       );
 
     return Card(
@@ -88,6 +104,8 @@ class CommentTile extends StatelessWidget {
             _comment = snap.data;
             return _buildThread(snap.data);
           } else if (snap.hasError) {
+            //_comment = snap.data;
+            //return _buildThread(snap.data);
             return Text('${snap.error}');
           } else {
             return CircularProgressIndicator();

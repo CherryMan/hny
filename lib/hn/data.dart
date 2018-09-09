@@ -9,25 +9,28 @@ import 'hn.dart';
 part 'data.g.dart';
 
 class Item {
-  Item(this.id, int time, this.by)
+  Item(this.id, int time, this.by, this.deleted)
     : this.time = DateTime.fromMillisecondsSinceEpoch(time * 1000);
 
   final int id;
   final DateTime time;
   final String by;
+
+  @JsonKey(defaultValue: false)
+  final bool deleted;
 }
 
 @JsonSerializable()
 class Story extends Item {
   Story(
-    id, time, by,
+    id, time, by, deleted,
     this.title,
     this.url,
     this.text,
     this.descendants,
     this.kids,
     this.score,
-  ) : super(id, time, by);
+  ) : super(id, time, by, deleted);
 
   factory Story.fromJson(Map<String, dynamic> json) => _$StoryFromJson(json);
 
@@ -49,12 +52,12 @@ class Story extends Item {
 @JsonSerializable()
 class Comment extends Item {
   Comment(
-    id, time, by,
+    id, time, by, deleted,
     text,
     this.parent,
     this.kids,
-  ) : this.text = HtmlUnescape().convert(text),
-      super(id, time, by);
+  ) : this.text = text != null ? HtmlUnescape().convert(text) : null,
+      super(id, time, by, deleted);
 
   factory Comment.fromJson(Map<String, dynamic> json) => _$CommentFromJson(json);
 
