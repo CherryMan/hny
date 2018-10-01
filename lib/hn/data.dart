@@ -20,7 +20,7 @@ class Item {
   final bool deleted;
 }
 
-@JsonSerializable()
+@JsonSerializable(createToJson: false)
 class Story extends Item {
   Story(
     id, time, by, deleted,
@@ -49,7 +49,7 @@ class Story extends Item {
   final int score;
 }
 
-@JsonSerializable()
+@JsonSerializable(createToJson: false)
 class Comment extends Item {
   Comment(
     id, time, by, deleted,

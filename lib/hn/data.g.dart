@@ -20,19 +20,6 @@ Story _$StoryFromJson(Map<String, dynamic> json) {
       json['score'] as int);
 }
 
-Map<String, dynamic> _$StoryToJson(Story instance) => <String, dynamic>{
-      'id': instance.id,
-      'time': instance.time?.toIso8601String(),
-      'by': instance.by,
-      'deleted': instance.deleted,
-      'title': instance.title,
-      'url': instance.url,
-      'text': instance.text,
-      'descendants': instance.descendants,
-      'kids': instance.kids,
-      'score': instance.score
-    };
-
 Comment _$CommentFromJson(Map<String, dynamic> json) {
   return Comment(
       json['id'],
@@ -43,13 +30,3 @@ Comment _$CommentFromJson(Map<String, dynamic> json) {
       json['parent'] as int,
       (json['kids'] as List)?.map((e) => e as int)?.toList());
 }
-
-Map<String, dynamic> _$CommentToJson(Comment instance) => <String, dynamic>{
-      'id': instance.id,
-      'time': instance.time?.toIso8601String(),
-      'by': instance.by,
-      'deleted': instance.deleted,
-      'text': instance.text,
-      'parent': instance.parent,
-      'kids': instance.kids
-    };

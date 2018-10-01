@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../hn/hn.dart';
-import '../hn/data.dart';
 import '../widget/story_list.dart';
 
 class HomeView extends StatelessWidget {

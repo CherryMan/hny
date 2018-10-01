@@ -30,7 +30,7 @@ class CommentTile extends StatelessWidget {
     // Widgets for the column that stores the info and comment text
     var colItems = <Widget>[];
 
-    if (_comment?.deleted) {
+    if (_comment?.deleted == null) {
       text   = '[deleted]';
     } else {
       author = _comment?.by   ?? '...';

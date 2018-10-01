@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../hn/data.dart';
 import 'comment_tile.dart';
 
 class CommentList extends StatelessWidget {

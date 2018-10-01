@@ -3,10 +3,20 @@ import 'package:flutter/material.dart';
 import '../hn/data.dart';
 import '../view/story.dart';
 
-class StoryTile extends StatelessWidget {
-  StoryTile(this._story);
+class StoryTile extends StatefulWidget {
+  StoryTile(this._storyID);
 
-  final Story _story;
+  int _storyID;
+
+  @override
+  _StoryTile createState() => _StoryTile(_storyID);
+}
+
+class _StoryTile extends State<StoryTile> {
+  _StoryTile(this._storyID);
+
+  final int _storyID;
+  Story _story;
 
   final _titleStyle = const
     TextStyle(
@@ -19,17 +29,6 @@ class StoryTile extends StatelessWidget {
       fontSize: 10.0,
       fontWeight: FontWeight.w300,
     );
-
-  Widget _titleWidget() => Container(
-    alignment: Alignment.centerLeft,
-    child: Text(
-      _story?.title ?? '...',
-      style: TextStyle(
-        fontSize: 18.0,
-        fontWeight: FontWeight.normal,
-      ),
-    ),
-  );
 
   // Generate what the card will contain
   Widget _cardContents() {
@@ -71,8 +70,7 @@ class StoryTile extends StatelessWidget {
     return mainRow;
   }
 
-  @override
-  Widget build(BuildContext ctx) =>
+  Widget _buildTile(BuildContext ctx) =>
     Card(
       margin: const EdgeInsets.all(2.5),
 
@@ -92,4 +90,21 @@ class StoryTile extends StatelessWidget {
         ),
       ),
     );
+
+  initState() {
+    super.initState();
+
+    Story.fromID(this._storyID).then((s) {
+      if (this.mounted) setState(() => _story = s);
+    });
+  }
+
+  @override
+  Widget build(BuildContext ctx) {
+    KeepAliveNotification(KeepAliveHandle()).dispatch(ctx);
+
+    var tile = _buildTile(ctx);
+
+    return tile;
+  }
 }

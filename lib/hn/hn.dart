@@ -3,8 +3,6 @@ import 'dart:async';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
 
-import 'data.dart';
-
 const HN_API_URL     = 'https://hacker-news.firebaseio.com';
 const HN_API_VERSION = 'v0';
 
@@ -62,11 +60,11 @@ Future<dynamic> query(String q) async {
 }
 
 Future<Map<String, dynamic>> getItem(int n) async
-  => query('item/${n}')
+  => query('item/$n')
       .then((x) => Map<String, dynamic>.from(x));
 
 Future<List<int>> getStories(StorySrc s) async
   => query(_storyPath[s]).then((x) => x.cast<int>());
 
 Future<String> getTitle(int i) async
-  => await query('item/${i}/title');
+  => await query('item/$i/title');
