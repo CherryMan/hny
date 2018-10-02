@@ -4,10 +4,11 @@ import 'comment_tile.dart';
 
 class CommentList extends StatelessWidget {
   CommentList(this._commentIDs, {int depth: 0})
-    : _depth = depth;
+    : comments =
+        _commentIDs.map((id) => CommentTile(id, depth: depth)).toList();
 
   final List<int> _commentIDs;
-  final int _depth;
+  final List<Widget> comments;
 
   @override
   Widget build(BuildContext _) => ListView.builder(
@@ -16,12 +17,8 @@ class CommentList extends StatelessWidget {
     itemCount: _commentIDs.length,
 
     itemBuilder: (ctx, i) {
-
-      // Prevent the comment from being unloaded
-      KeepAliveNotification(KeepAliveHandle())
-        .dispatch(ctx);
-
-      return CommentTile(_commentIDs[i], depth: _depth);
+      //if (i == 0)
+        return comments[i];
     },
   );
 }
