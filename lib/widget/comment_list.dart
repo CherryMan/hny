@@ -17,7 +17,6 @@ class CommentList extends StatelessWidget {
     itemCount: _commentIDs.length,
 
     itemBuilder: (ctx, i) {
-      //if (i == 0)
         return comments[i];
     },
   );

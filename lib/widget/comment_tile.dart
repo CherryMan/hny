@@ -11,8 +11,8 @@ class CommentTile extends StatefulWidget {
   final int _depth;
 
   Comment _comment;
-  Widget _tile;
   Widget _subComments;
+  bool _collapsed = false;
 
   @override
   _CommentTile createState() => _CommentTile(_commentID, _depth);
@@ -25,25 +25,20 @@ class _CommentTile extends State<CommentTile> {
   final int _commentID;
 
   Comment _comment;
-  bool _collapsed = false;
 
   initState() {
     super.initState();
 
     if (widget._comment == null) {
 
-      widget._tile = _buildTile(null); // Placeholder
-
       Comment.fromID(this._commentID).then((c) {
         widget._comment = c;
-        widget._tile = _buildTile(c);
 
         if (c.kids != null)
           widget._subComments ??= _buildSubComments(c.kids);
 
         if (this.mounted)
           setState(() {});
-        //if (this.mounted) _setComment(c);
       });
     }
   }
@@ -52,7 +47,7 @@ class _CommentTile extends State<CommentTile> {
     Card(
       child: InkWell(
         onTap: () {
-          setState(() => _collapsed = !_collapsed);
+          setState(() => widget._collapsed = !widget._collapsed);
         },
 
         child: Container(
@@ -71,10 +66,10 @@ class _CommentTile extends State<CommentTile> {
   Widget _buildThread() {
     var comm =
       Row(
-        children: [ Expanded(child: widget._tile) ],
+        children: [ Expanded(child: _buildTile(widget._comment)) ],
       );
 
-    if (!_collapsed && widget._subComments != null) {
+    if (!widget._collapsed && widget._subComments != null) {
 
       return Column(
         crossAxisAlignment: CrossAxisAlignment.end,
