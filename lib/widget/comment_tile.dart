@@ -34,8 +34,9 @@ class _CommentTile extends State<CommentTile> {
       Comment.fromID(this._commentID).then((c) {
         widget._comment = c;
 
+        // Build the subcomments
         if (c.kids != null)
-          widget._subComments ??= _buildSubComments(c.kids);
+          widget._subComments ??= CommentList(c.kids, depth: _depth + 1);
 
         if (this.mounted)
           setState(() {});
@@ -43,25 +44,29 @@ class _CommentTile extends State<CommentTile> {
     }
   }
 
-  Widget _buildTile(Comment c) =>
-    Card(
-      child: InkWell(
-        onTap: () {
-          setState(() => widget._collapsed = !widget._collapsed);
-        },
+  Widget _buildTile(Comment c) {
 
-        child: Container(
-          margin: const EdgeInsets.all(12.0),
-          child: _CommentData(c),
-        ),
-      ),
-    );
+    // A Container containing the CommentData
+    Widget comm =
+      Container(
+        margin: const EdgeInsets.all(12.0),
+        child: _CommentData(c),
+      );
 
-  Widget _buildSubComments(List<int> kids) =>
-    Padding(
-      padding: const EdgeInsets.only(left: 15.0),
-      child: CommentList(kids, depth: _depth + 1),
-    );
+    // If there are child comments, add an InkWell
+    // to toggle whether the thread is collapsed.
+    if (widget._subComments != null) {
+      comm =
+        InkWell(
+          child: comm,
+          onTap: () {
+            setState(() => widget._collapsed = !widget._collapsed);
+          },
+        );
+    }
+
+    return Card(child: comm, elevation: .5);
+  }
 
   Widget _buildThread() {
     var comm =
@@ -95,7 +100,7 @@ class _CommentTile extends State<CommentTile> {
 }
 
 class _CommentData extends StatelessWidget {
-  _CommentData(this._comment);
+  _CommentData(this._comment); // _comment can be null
 
   final Comment _comment;
 
