@@ -1,4 +1,9 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/gestures.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:html_unescape/html_unescape_small.dart';
 
 import '../hn/data.dart';
 import 'comment_list.dart';
@@ -115,6 +120,71 @@ class _CommentData extends StatelessWidget {
       fontWeight: FontWeight.normal,
     );
 
+  final _textStyleItalic = const
+    TextStyle(
+      fontStyle: FontStyle.italic,
+    );
+
+  final _textStyleLink = const
+    TextStyle(
+      color: Colors.blue,
+    );
+
+  final _textStyleCode =
+    TextStyle(
+      fontFamily: Platform.isIOS ? 'Menlo' : 'monospace',
+    );
+
+  // Assumes that the string has no errors.
+  Text _formatText(String s) {
+    var pars =
+      s.replaceAll('<p>', '\n\n') // Split paragraphs
+
+      // Handle italics and links
+      // On HN, italics, links, and code blocks overlapping are
+      // not an issue, so they are handled separately.
+      // The way codeblocks work is also very hardcoded, and
+      // should probably be changed.
+      .split(RegExp(r'(?=<(i|a.*?)>)|<\/(i|a)>|(?=<pre><code>)|<\/code><\/pre>'))
+      .map((s) {
+
+        // escaped text
+        var esc = HtmlUnescape().convert(s);
+
+        // italic
+        if (s.startsWith('<i>')) {
+          return TextSpan(text: esc.substring(3), style: _textStyleItalic);
+
+        // codeblock
+        } else if (s.startsWith('<pre><code>')) {
+          return TextSpan(text: esc.substring(11), style: _textStyleCode);
+
+        // link
+        } else if (s.startsWith('<a')) {
+          var exp = RegExp(r'<a\s+href="(.+?)".+?>(.*)');
+          var m = exp.firstMatch(esc);
+          return
+            TextSpan(
+              text: m.group(2),
+              style: _textStyleLink,
+              recognizer: new TapGestureRecognizer()
+                ..onTap = () => launch(m.group(1)),
+            );
+
+        // default
+        } else {
+          return TextSpan(text: esc);
+        }
+      })
+
+      .toList();
+
+    return
+      Text.rich(
+        TextSpan(children: pars, style: _textStyle)
+      );
+  }
+
   Widget build(BuildContext _) {
     String author, text;
 
@@ -141,7 +211,7 @@ class _CommentData extends StatelessWidget {
     }
 
     colItems.add(
-      Text(text, style: _textStyle),
+      _formatText(text),
     );
 
     return
