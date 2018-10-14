@@ -15,7 +15,7 @@ class CommentTile extends StatefulWidget {
   final int _commentID;
   final int _depth;
 
-  Comment _comment;
+  Widget _commTile;
   Widget _subComments;
   bool _collapsed = false;
 
@@ -29,15 +29,16 @@ class _CommentTile extends State<CommentTile> {
   final int _depth;
   final int _commentID;
 
-  Comment _comment;
-
   initState() {
     super.initState();
 
-    if (widget._comment == null) {
+    if (widget._commTile == null) {
+      // Create placeholder
+      widget._commTile = _buildTile(null);
 
+      // Get comment data from server and rebuild tile.
       Comment.fromID(this._commentID).then((c) {
-        widget._comment = c;
+        widget._commTile = _buildTile(c);
 
         // Build the subcomments
         if (c.kids != null)
@@ -49,14 +50,20 @@ class _CommentTile extends State<CommentTile> {
     }
   }
 
+  // If c is null, this creates a placeholder tile.
   Widget _buildTile(Comment c) {
-
-    // A Container containing the CommentData
-    Widget comm =
-      Container(
-        margin: const EdgeInsets.all(12.0),
-        child: _CommentData(c),
+    return
+      Card(
+        elevation: .5,
+        child: Container(
+          margin: const EdgeInsets.all(12.0),
+          child: _CommentData(c),
+        ),
       );
+  }
+
+  Widget _buildThread() {
+    var comm = widget._commTile;
 
     // If there are child comments, add an InkWell
     // to toggle whether the thread is collapsed.
@@ -70,15 +77,14 @@ class _CommentTile extends State<CommentTile> {
         );
     }
 
-    return Card(child: comm, elevation: .5);
-  }
-
-  Widget _buildThread() {
-    var comm =
+    // Allows the tile to expand horizontally
+    comm =
       Row(
-        children: [ Expanded(child: _buildTile(widget._comment)) ],
+        children: [ Expanded(child: comm) ],
       );
 
+
+    // Draw the subcomments if necessary
     if (!widget._collapsed && widget._subComments != null) {
 
       return Column(
