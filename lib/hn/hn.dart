@@ -54,10 +54,8 @@ initFirebase() async {
 }
 
 // Query the root of the API and return the value.
-Future<dynamic> query(String q) async {
-  //initFirebase();
-  return _db.child(q).once().then((DataSnapshot s) => s.value);
-}
+Future<dynamic> query(String q) async
+  => _db.child(q).once().then((DataSnapshot s) => s.value);
 
 Future<Map<String, dynamic>> getItem(int n) async
   => query('item/$n')
@@ -65,6 +63,3 @@ Future<Map<String, dynamic>> getItem(int n) async
 
 Future<List<int>> getStories(StorySrc s) async
   => query(_storyPath[s]).then((x) => x.cast<int>());
-
-Future<String> getTitle(int i) async
-  => await query('item/$i/title');
