@@ -1,18 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 
 import '../hn/data.dart';
 import '../view/story.dart';
 
 class StoryTile extends StatefulWidget {
   StoryTile(this._storyID);
-
   int _storyID;
 
-  @override
   _StoryTile createState() => _StoryTile(_storyID);
 }
 
-class _StoryTile extends State<StoryTile> {
+class _StoryTile extends State<StoryTile> with SingleTickerProviderStateMixin {
   _StoryTile(this._storyID);
 
   final int _storyID;
@@ -32,7 +31,6 @@ class _StoryTile extends State<StoryTile> {
 
   // Generate what the card will contain
   Widget _cardContents() {
-
     var infoRow =
       Row(
         children: <Widget>[
@@ -73,7 +71,6 @@ class _StoryTile extends State<StoryTile> {
   Widget _buildTile(BuildContext ctx) =>
     Card(
       margin: const EdgeInsets.all(2.5),
-
       child: InkWell(
         onTap: () {
           if (_story != null) {
@@ -83,7 +80,6 @@ class _StoryTile extends State<StoryTile> {
             );
           }
         },
-
         child: Container(
           padding: const EdgeInsets.all(10.0),
           child: _cardContents(),
@@ -91,20 +87,25 @@ class _StoryTile extends State<StoryTile> {
       ),
     );
 
-  initState() {
-    super.initState();
-
-    Story.fromID(this._storyID).then((s) {
-      if (this.mounted) setState(() => _story = s);
-    });
-  }
-
   @override
   Widget build(BuildContext ctx) {
     KeepAliveNotification(KeepAliveHandle()).dispatch(ctx);
 
-    var tile = _buildTile(ctx);
+    var fb =
+      FutureBuilder<Story>(
+        future: Story.fromID(this._storyID),
+        builder: (ctx, snap) {
+          if (snap.hasData) _story = snap.data;
 
-    return tile;
+          return _buildTile(ctx);
+        },
+      );
+
+    return
+      AnimatedSize(
+        child: fb,
+        duration: Duration(milliseconds: 200),
+        vsync: this,
+      );
   }
 }
