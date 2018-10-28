@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 
 import 'comment_tile.dart';
 
@@ -9,18 +10,31 @@ class CommentList extends StatelessWidget {
 
   final int _depth;
   final List<int> _commentIDs;
-  final List<Widget> _comments;
+  final List<CommentTile> _comments; // cached comment tiles
 
-  @override
-  Widget build(BuildContext _) => ListView.builder(
-    physics: const ClampingScrollPhysics(),
-    shrinkWrap: true,
-    itemCount: _commentIDs.length,
-    padding: _depth != 0 ? const EdgeInsets.only(left: 15.0) : null,
+  @override build(BuildContext _) {
 
-    itemBuilder: (ctx, i) {
-      _comments[i] ??= CommentTile(_commentIDs[i], depth: _depth);
-      return _comments[i];
-    },
-  );
+    // Delegate that builds every comment in the list
+    final delegate = SliverChildBuilderDelegate(
+      (ctx, i) {
+        _comments[i] ??= CommentTile(_commentIDs[i], depth: _depth);
+        return _comments[i];
+      },
+      childCount: _commentIDs.length,
+    );
+
+    final list = CustomScrollView(
+      physics: const ClampingScrollPhysics(),
+      shrinkWrap: true,
+      slivers: [
+        SliverList(delegate: delegate),
+      ],
+    );
+
+    // Indent the list if it's nested
+    return
+      _depth > 0
+      ? Padding(child: list, padding: const EdgeInsets.only(left: 15.0))
+      : list;
+  }
 }
