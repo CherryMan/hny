@@ -2,8 +2,8 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter/material.dart';
 
 import 'story/header.dart';
+import 'story/comment_list.dart';
 import '../hn/data.dart';
-import '../widget/comment_list.dart';
 
 
 class StoryView extends StatelessWidget {
@@ -14,22 +14,16 @@ class StoryView extends StatelessWidget {
 
   @override
   Widget build(BuildContext _) {
-    return
-      Scaffold(
-        body: CustomScrollView(
-          slivers: <Widget>[
-
-            SliverSafeArea(
-              sliver: SliverToBoxAdapter(
-                child: StoryHeader(_story),
-              ),
-            ),
-
-            SliverToBoxAdapter(
-              child: CommentList(_story.kids)
-            ),
-          ],
-        ),
-      );
+    return Scaffold(
+      body: CustomScrollView(
+        slivers: <Widget>[
+          SliverSafeArea(
+            sliver: SliverToBoxAdapter(
+            child: StoryHeader(_story))),
+          SliverToBoxAdapter(
+            child: CommentList(_story.kids)),
+        ],
+      ),
+    );
   }
 }

@@ -46,9 +46,9 @@ class StoryHeader extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
         Icon(Icons.comment, size: _infoSize),
-        Text('${_story.score}', style: _infoStyle),
-        Icon(Icons.arrow_upward, size: _infoSize),
         Text('${_story.descendants}', style: _infoStyle),
+        Icon(Icons.arrow_upward, size: _infoSize),
+        Text('${_story.score}', style: _infoStyle),
       ],
     );
 

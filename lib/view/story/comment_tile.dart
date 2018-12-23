@@ -5,8 +5,8 @@ import 'package:flutter/gestures.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:html_unescape/html_unescape_small.dart';
 
-import '../hn/data.dart';
 import 'comment_list.dart';
+import '../../hn/data.dart';
 
 class CommentTile extends StatefulWidget {
   CommentTile(this._commentID, {int depth: 0})

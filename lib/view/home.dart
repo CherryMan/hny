@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../hn/hn.dart';
-import '../widget/story_list.dart';
+import 'home/story_list.dart';
 
 class HomeView extends StatelessWidget {
   @override
